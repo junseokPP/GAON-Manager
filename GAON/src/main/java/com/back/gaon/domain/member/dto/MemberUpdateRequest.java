@@ -1,7 +1,7 @@
-package com.back.gaon.member.dto;
+package com.back.gaon.domain.member.dto;
 
-import com.back.gaon.member.enums.Gender;
-import com.back.gaon.member.enums.Grade;
+import com.back.gaon.domain.member.enums.Gender;
+import com.back.gaon.domain.member.enums.Grade;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 

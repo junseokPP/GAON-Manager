@@ -1,8 +1,8 @@
-package com.back.gaon.member.entity;
+package com.back.gaon.domain.member.entity;
 
-import com.back.gaon.member.enums.Gender;
-import com.back.gaon.member.enums.Grade;
-import com.back.gaon.member.enums.MemberStatus;
+import com.back.gaon.domain.member.enums.Gender;
+import com.back.gaon.domain.member.enums.Grade;
+import com.back.gaon.domain.member.enums.MemberStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -29,8 +29,8 @@ public class Member {
     @Column(nullable = false, length = 20, unique = true)
     private String phone;  // 학생 휴대폰
 
-    @Column(length = 20)
-    private String parentPhone;  // 학부모 연락처
+    @Column(nullable = false, length = 20, unique = true)
+    private String parentPhone;// 학부모 연락처
 
     @Column(length = 50)
     private String school;  // 학교명

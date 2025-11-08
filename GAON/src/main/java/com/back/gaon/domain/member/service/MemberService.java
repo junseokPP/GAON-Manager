@@ -1,14 +1,12 @@
-package com.back.gaon.member.service;
+package com.back.gaon.domain.member.service;
 
-import com.back.gaon.member.dto.MemberCreateRequest;
-import com.back.gaon.member.dto.MemberResponse;
-import com.back.gaon.member.dto.MemberUpdateRequest;
-import com.back.gaon.member.entity.Member;
-import com.back.gaon.member.enums.MemberStatus;
-import com.back.gaon.member.repository.MemberRepository;
+import com.back.gaon.domain.member.dto.MemberCreateRequest;
+import com.back.gaon.domain.member.dto.MemberResponse;
+import com.back.gaon.domain.member.dto.MemberUpdateRequest;
+import com.back.gaon.domain.member.entity.Member;
+import com.back.gaon.domain.member.enums.MemberStatus;
+import com.back.gaon.domain.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +21,19 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public MemberResponse createMember(MemberCreateRequest request) {
+
+        if (request.phone().equals(request.parentPhone())) {
+            throw new IllegalArgumentException("학생 휴대폰과 학부모 휴대폰은 같을 수 없습니다.");
+        }
+
+        // 학생/학부모 모두 유니크 체크
+        if (memberRepository.existsByPhone(request.phone())) {
+            throw new IllegalArgumentException("이미 사용 중인 학생 휴대폰 번호입니다.");
+        }
+        if (memberRepository.existsByParentPhone(request.parentPhone())) {
+            throw new IllegalArgumentException("이미 사용 중인 학부모 휴대폰 번호입니다.");
+        }
+
         Member member = toEntity(request);
         Member saved = memberRepository.save(member);
         return toResponse(saved);
@@ -46,6 +57,20 @@ public class MemberService {
     public MemberResponse updateMember(Long id, MemberUpdateRequest req) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
+
+
+
+        if (req.phone() != null && req.parentPhone() != null && req.phone().equals(req.parentPhone())) {
+            throw new IllegalArgumentException("학생 휴대폰과 학부모 휴대폰은 같을 수 없습니다.");
+        }
+
+        // 학생/학부모 유니크(현재 id 제외)
+        if (req.phone() != null && memberRepository.existsByPhoneAndIdNot(req.phone(), id)) {
+            throw new IllegalArgumentException("이미 사용 중인 학생 휴대폰 번호입니다.");
+        }
+        if (req.parentPhone() != null && memberRepository.existsByParentPhoneAndIdNot(req.parentPhone(), id)) {
+            throw new IllegalArgumentException("이미 사용 중인 학부모 휴대폰 번호입니다.");
+        }
 
         if (req.name() != null) member.setName(req.name());
         if (req.gender() != null) member.setGender(req.gender());

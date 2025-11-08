@@ -1,10 +1,9 @@
-package com.back.gaon.member.controller;
+package com.back.gaon.domain.member.controller;
 
-import com.back.gaon.member.dto.MemberCreateRequest;
-import com.back.gaon.member.dto.MemberResponse;
-import com.back.gaon.member.dto.MemberUpdateRequest;
-import com.back.gaon.member.entity.Member;
-import com.back.gaon.member.service.MemberService;
+import com.back.gaon.domain.member.dto.MemberCreateRequest;
+import com.back.gaon.domain.member.dto.MemberResponse;
+import com.back.gaon.domain.member.dto.MemberUpdateRequest;
+import com.back.gaon.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,7 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberResponse> getMemberById(@RequestParam Long id){
+    public ResponseEntity<MemberResponse> getMemberById(@PathVariable Long id){
         return ResponseEntity.ok().body(memberService.getMember(id));
     }
 
