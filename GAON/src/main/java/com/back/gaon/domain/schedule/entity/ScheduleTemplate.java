@@ -1,10 +1,13 @@
 package com.back.gaon.domain.schedule.entity;
 
 import com.back.gaon.domain.member.entity.Member;
+import com.back.gaon.domain.schedule.enums.TemplateStatus;
 import com.back.gaon.global.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -42,12 +45,28 @@ public class ScheduleTemplate extends BaseTimeEntity {
     @JoinColumn(name = "member_id", nullable = false)//db단에서 null허용안한다.
     private Member member;
 
+    @Column(length = 100)
+    private String name;
+
+    @Column(length = 255)
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TemplateStatus status = TemplateStatus.DRAFT;
+
+    @Column(name = "approved_by")
+    private Long approvedBy;
+
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
+
     @Column(name = "current_approved_version_id")
     private Long currentApprovedVersionId;
 
-    ///mappedBy = "template" 외래키를가진 template_id가 주체다. 이클래스는 읽기전용
-    ///cascade = ALL 부모 삭제,저장 등등 시 자식도 삭제,저장 등등
-    ///고아발생시 삭제
+    /// mappedBy = "template" 외래키를가진 template_id가 주체다. 이클래스는 읽기전용
+    /// cascade = ALL 부모 삭제,저장 등등 시 자식도 삭제,저장 등등
+    /// 고아발생시 삭제
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ScheduleTemplateVersion> versions =  new ArrayList<>();
+    private List<ScheduleTemplateVersion> versions = new ArrayList<>();
 }

@@ -1,8 +1,8 @@
-package com.back.gaon.domain.schedule.response;
+package com.back.gaon.domain.schedule.dto.request.item;
 
 import java.time.LocalTime;
 
-public record ItemResponse(
+public record ItemUpsertDto(
         Long id,
         String title,
         String description,

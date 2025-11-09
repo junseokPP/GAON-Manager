@@ -1,4 +1,4 @@
-package com.back.gaon.domain.schedule.response;
+package com.back.gaon.domain.schedule.dto.response.item;
 
 import java.time.DayOfWeek;
 import java.util.List;

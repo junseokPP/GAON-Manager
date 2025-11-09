@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ScheduleTemplateRepository extends JpaRepository<ScheduleTemplate, Long> {
     Optional<ScheduleTemplate> findByMemberId(Long memberId);
+    boolean existsByMemberId(Long memberId);
 }
