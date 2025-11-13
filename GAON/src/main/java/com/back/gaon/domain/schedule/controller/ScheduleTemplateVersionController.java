@@ -2,6 +2,7 @@
 package com.back.gaon.domain.schedule.controller;
 
 import com.back.gaon.domain.schedule.dto.request.version.ScheduleTemplateVersionCreateRequest;
+import com.back.gaon.domain.schedule.dto.request.version.ScheduleTemplateVersionRejectRequest;
 import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersionCreateResponse;
 import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersionDetailResponse;
 import com.back.gaon.domain.schedule.service.version.ScheduleTemplateVersionService;
@@ -37,4 +38,23 @@ public class ScheduleTemplateVersionController {
         return ResponseEntity.ok(getVersion);
     }
 
+    /**  버전 승인 */
+    @PostMapping("/{id}/approve")
+    // @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ScheduleTemplateVersionDetailResponse> approve(@PathVariable Long id) {
+        ScheduleTemplateVersionDetailResponse approved = versionService.approve(id);
+        return ResponseEntity.ok(approved);
+    }
+
+    /**  버전 반려 */
+    @PostMapping("/{id}/reject")
+    // @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ScheduleTemplateVersionDetailResponse> reject(
+            @PathVariable Long id,
+            @Valid @RequestBody ScheduleTemplateVersionRejectRequest req
+    ) {
+        ScheduleTemplateVersionDetailResponse rejected =
+                versionService.reject(id, req.rejectReason());
+        return ResponseEntity.ok(rejected);
+    }
 }

@@ -6,7 +6,6 @@ import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersio
 import com.back.gaon.domain.schedule.entity.ScheduleTemplate;
 import com.back.gaon.domain.schedule.entity.ScheduleTemplateVersion;
 import com.back.gaon.domain.schedule.enums.TemplateStatus;
-import com.back.gaon.domain.schedule.mapper.ScheduleTemplateMapper;
 import com.back.gaon.domain.schedule.mapper.ScheduleTemplateVersionMapper;
 import com.back.gaon.domain.schedule.repository.ScheduleTemplateRepository;
 import com.back.gaon.domain.schedule.repository.ScheduleTemplateVersionRepository;
@@ -91,6 +90,67 @@ public class ScheduleTemplateVersionServiceImpl implements ScheduleTemplateVersi
                     "Schedule template version not found for templateId=" + templateId + ", versionId=" + versionId
             );
         }
+
+        return ScheduleTemplateVersionMapper.toVersionDetailResponse(version);
+    }
+
+    @Override
+    public ScheduleTemplateVersionDetailResponse approve(Long versionId) {
+        // 1) 버전 조회 (없으면 404)
+        ScheduleTemplateVersion version = scheduleTemplateVersionRepository.findById(versionId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Schedule template version not found: id=" + versionId
+                ));
+
+        // 2) 상태 체크 (PENDING만 승인 허용)
+        if (version.getStatus() != TemplateStatus.PENDING) {
+            throw new IllegalStateException(
+                    "승인은 PENDING 상태에서만 가능합니다. 현재 상태: " + version.getStatus()
+            );
+        }
+
+        // 3) 상태 변경
+        version.setStatus(TemplateStatus.APPROVED);
+        version.setRejectReason(null);          // 이전 반려 사유 있으면 초기화
+        // 나중에 Security 붙이면 여기서 reviewedBy, reviewedAt 같은 거 채우면 됨
+        // version.setReviewedBy(currentAdminId);
+        // version.setReviewedAt(LocalDateTime.now());
+
+        // 4) 부모 템플릿도 업데이트
+        ScheduleTemplate template = version.getTemplate();
+        template.setCurrentApprovedVersionId(version.getId());
+        template.setStatus(TemplateStatus.APPROVED);
+
+        // 5) 트랜잭션 안이므로 save 명시 안 해도 flush 되지만, 명시하고 싶으면:
+        // scheduleTemplateVersionRepository.save(version);
+
+        return ScheduleTemplateVersionMapper.toVersionDetailResponse(version);
+    }
+
+    @Override
+    public ScheduleTemplateVersionDetailResponse reject(Long versionId, String rejectReason) {
+        // 1) 버전 조회
+        ScheduleTemplateVersion version = scheduleTemplateVersionRepository.findById(versionId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Schedule template version not found: id=" + versionId
+                ));
+
+        // 2) 상태 체크 (PENDING만 반려 허용)
+        if (version.getStatus() != TemplateStatus.PENDING) {
+            throw new IllegalStateException(
+                    "반려는 PENDING 상태에서만 가능합니다. 현재 상태: " + version.getStatus()
+            );
+        }
+
+        // 3) 상태 변경
+        version.setStatus(TemplateStatus.REJECTED);
+        version.setRejectReason(rejectReason);
+        // 나중에 Security 붙이면 reviewer 정보 채우면 됨
+        // version.setReviewedBy(currentAdminId);
+        // version.setReviewedAt(LocalDateTime.now());
+
+        // 4) 템플릿은 여기서 currentApprovedVersionId를 건드리지 않음
+        //    이미 승인된 버전이 있다면 그대로 유지하는 게 자연스러움.
 
         return ScheduleTemplateVersionMapper.toVersionDetailResponse(version);
     }
