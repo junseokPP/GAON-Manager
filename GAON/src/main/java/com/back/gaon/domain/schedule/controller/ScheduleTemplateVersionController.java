@@ -2,7 +2,8 @@
 package com.back.gaon.domain.schedule.controller;
 
 import com.back.gaon.domain.schedule.dto.request.version.ScheduleTemplateVersionCreateRequest;
-import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersionResponse;
+import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersionCreateResponse;
+import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersionDetailResponse;
 import com.back.gaon.domain.schedule.service.version.ScheduleTemplateVersionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,19 +15,26 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/schedule-template-versions")
+@RequestMapping("/api/v1/schedule-template-versions")
 public class ScheduleTemplateVersionController {
 
     private final ScheduleTemplateVersionService versionService;
 
     @PostMapping
     // @PreAuthorize("hasAnyRole('ADMIN','STUDENT')")
-    public ResponseEntity<ScheduleTemplateVersionResponse> create(
+    public ResponseEntity<ScheduleTemplateVersionCreateResponse> create(
             @Valid @RequestBody ScheduleTemplateVersionCreateRequest req
             // , Authentication auth
     ) {
-        ScheduleTemplateVersionResponse created = versionService.create(req /*, auth */);
+        ScheduleTemplateVersionCreateResponse created = versionService.create(req /*, auth */);
         return ResponseEntity.created(URI.create("/api/schedule-template-versions/" + created.id()))
                 .body(created);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ScheduleTemplateVersionDetailResponse> get(@PathVariable Long id) {
+        ScheduleTemplateVersionDetailResponse getVersion = versionService.findVersionById(id);
+        return ResponseEntity.ok(getVersion);
+    }
+
 }

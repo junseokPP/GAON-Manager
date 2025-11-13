@@ -2,13 +2,15 @@
 package com.back.gaon.domain.schedule.mapper;
 
 import com.back.gaon.domain.schedule.dto.request.version.ScheduleTemplateVersionCreateRequest;
-import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersionResponse;
+import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersionCreateResponse;
+import com.back.gaon.domain.schedule.dto.response.version.ScheduleTemplateVersionDetailResponse;
 import com.back.gaon.domain.schedule.entity.ScheduleTemplate;
 import com.back.gaon.domain.schedule.entity.ScheduleTemplateVersion;
 import com.back.gaon.domain.schedule.enums.TemplateStatus;
 
 public final class ScheduleTemplateVersionMapper {
-    private ScheduleTemplateVersionMapper() {}
+    private ScheduleTemplateVersionMapper() {
+    }
 
     public static ScheduleTemplateVersion toEntity(ScheduleTemplateVersionCreateRequest req,
                                                    ScheduleTemplate template,
@@ -25,10 +27,19 @@ public final class ScheduleTemplateVersionMapper {
                 .build();
     }
 
-    public static ScheduleTemplateVersionResponse toResponse(ScheduleTemplateVersion v) {
-        return new ScheduleTemplateVersionResponse(
+    public static ScheduleTemplateVersionCreateResponse toCreateResponse(ScheduleTemplateVersion v) {
+        return new ScheduleTemplateVersionCreateResponse(
                 v.getId(),
                 v.getTemplate().getId(),
+                v.getVersionNo(),
+                v.getStatus()
+        );
+    }
+
+    public static ScheduleTemplateVersionDetailResponse toVersionDetailResponse(ScheduleTemplateVersion v) {
+        return new ScheduleTemplateVersionDetailResponse(
+                v.getId(),
+                v.getTemplate().getId(),   // FK → templateId
                 v.getVersionNo(),
                 v.getStatus(),
                 v.getEffectiveFrom(),
@@ -38,5 +49,6 @@ public final class ScheduleTemplateVersionMapper {
                 v.getCreatedAt(),
                 v.getUpdatedAt()
         );
+
     }
 }

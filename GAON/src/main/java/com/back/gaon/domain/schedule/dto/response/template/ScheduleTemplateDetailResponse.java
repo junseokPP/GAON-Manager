@@ -4,7 +4,7 @@ import com.back.gaon.domain.schedule.enums.TemplateStatus;
 
 import java.time.LocalDateTime;
 
-public record ScheduleTemplateResponse(
+public record ScheduleTemplateDetailResponse(
         Long id,
         Long memberId,
         String name,

@@ -4,7 +4,7 @@ import com.back.gaon.domain.schedule.enums.TemplateStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record ScheduleTemplateVersionResponse(
+public record ScheduleTemplateVersionDetailResponse(
         Long id,
         Long templateId,
         Integer versionNo,

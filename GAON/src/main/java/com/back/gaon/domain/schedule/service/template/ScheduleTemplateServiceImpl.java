@@ -2,17 +2,21 @@ package com.back.gaon.domain.schedule.service.template;
 
 import com.back.gaon.domain.member.entity.Member;
 import com.back.gaon.domain.member.repository.MemberRepository;
+import com.back.gaon.domain.schedule.dto.response.template.ScheduleTemplateCreateResponse;
+import com.back.gaon.domain.schedule.dto.response.template.ScheduleTemplateDetailResponse;
 import com.back.gaon.domain.schedule.entity.ScheduleTemplate;
 import com.back.gaon.domain.schedule.enums.TemplateStatus;
 import com.back.gaon.domain.schedule.mapper.ScheduleTemplateMapper;
 import com.back.gaon.domain.schedule.repository.ScheduleTemplateRepository;
 import com.back.gaon.domain.schedule.dto.request.template.ScheduleTemplateCreateRequest;
-import com.back.gaon.domain.schedule.dto.response.template.ScheduleTemplateResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +27,7 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
     private final MemberRepository memberRepository;
 
     @Override
-    public ScheduleTemplateResponse create(ScheduleTemplateCreateRequest req /*, Authentication auth */){
+    public ScheduleTemplateCreateResponse create(ScheduleTemplateCreateRequest req /*, Authentication auth */){
         Member member = memberRepository.findById(req.memberId())
                 .orElseThrow(() -> new EntityNotFoundException("Member not found: id=" + req.memberId()));
 
@@ -60,6 +64,23 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
         // }
 
         ScheduleTemplate saved = scheduleTemplateRepository.save(entity);
-        return ScheduleTemplateMapper.toResponse(saved);
+        return ScheduleTemplateMapper.toCreateResponse(saved);
+    }
+
+    @Override
+    public ScheduleTemplateDetailResponse  findById(Long id) {
+        ScheduleTemplate scheduleTemplate = scheduleTemplateRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule template not found: id=" + id));
+        return ScheduleTemplateMapper.toDetailResponse(scheduleTemplate);
+    }
+
+    @Override
+    public List<ScheduleTemplateDetailResponse> findAll(){
+        List<ScheduleTemplate> scheduleTemplates = scheduleTemplateRepository.findAll();
+        List<ScheduleTemplateDetailResponse> scheduleTemplateDetailResponses = new ArrayList<>();
+        for (ScheduleTemplate scheduleTemplate : scheduleTemplates) {
+            scheduleTemplateDetailResponses.add(ScheduleTemplateMapper.toDetailResponse(scheduleTemplate));
+        }
+        return scheduleTemplateDetailResponses;
     }
 }
