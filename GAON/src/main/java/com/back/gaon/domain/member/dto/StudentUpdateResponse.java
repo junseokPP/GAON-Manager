@@ -1,8 +1,7 @@
 package com.back.gaon.domain.member.dto;
 
 import com.back.gaon.domain.member.enums.Gender;
-import com.back.gaon.domain.member.enums.MemberStatus;
-import com.back.gaon.domain.member.enums.Role;
+import com.back.gaon.domain.member.enums.Grade;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberResponse {
+public class StudentUpdateResponse {
 
     private Long id;
 
@@ -20,13 +19,17 @@ public class MemberResponse {
 
     private String phone;
 
-    private Role role;
-
     private Gender gender;
 
-    private String email;
+    private String school;
 
-    private LocalDate joinDate;
+    private Grade grade;
 
-    private MemberStatus status;
+    private String seatNumber;
+
+    private String emergencyContact;
+
+    private String memo;
+
+    private LocalDate updatedAt;  // 수정 일시
 }
